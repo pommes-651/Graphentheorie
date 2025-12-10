@@ -9,6 +9,20 @@
 
 # These: die Listen "Pfad" und "result" sind nicht getrennt, deshalb gibt es die ungewollte Ausgabe
 
+    # Lösung: die Liste von result kopieren: result.append(path.copy())
+        # Jetzt im Speicher:
+        # pfad ──────────► ['Start', 'A', 'C']   ← Original
+        
+        # result[0] ─────► ['Start', 'A', 'C']   ← Separate Kopie!
+
+        # pfad.pop()
+
+        # Nach pop():
+        # pfad ──────────► ['Start', 'A']        ← Nur diese wird verändert
+        
+        # result[0] ─────► ['Start', 'A', 'C']   ← Kopie bleibt unverändert ✓
+
+
 
 # Testgraph in dem der Issue entdeckt wurde
 graph_kompakt = {
@@ -32,7 +46,7 @@ def tiefensuche(graph, node, goal, path, result, tiefe=0):
     if node == goal:
         print(f"{einrueckung}Ziel erreicht: {goal} | Pfad speichern: {path}")
         # vermutete Fehlerquelle
-        result.append(path)
+        result.append(path.copy()) # <- copy hinzugefügt
         path.pop()
         print(f"{einrueckung}Nach dem Erreichen des Ziels {node} wieder aus Pfad entfernen | Pfad jetzt: {path}")
         return result
@@ -40,9 +54,10 @@ def tiefensuche(graph, node, goal, path, result, tiefe=0):
     for child in graph[node]:
         if child not in path:
             print(f"{einrueckung}Wir fahren von {node} zu {child}")
-            return tiefensuche(graph, child, goal, path, result, tiefe + 1)
+            tiefensuche(graph, child, goal, path, result, tiefe + 1) # ohne return, da sonst child B nie getestet wird
 
     path.pop()
     print(f"{einrueckung}Pfad zu Ende: {node} aus Pfad entfernen | Pfad jetzt: {path}")
+    return result # return hier eingefügt
 
 print(tiefensuche(graph_kompakt, "Start", "C", [], []))
